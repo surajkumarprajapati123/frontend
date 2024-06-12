@@ -59,7 +59,7 @@ const Register = () => {
       formData.append('email', email);
       formData.append('password', password);
       formData.append('departmentName', departmentName);
-
+        
       fetch('http://localhost:3000/user/create', {
         method: 'POST',
         body: formData,
