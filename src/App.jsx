@@ -13,6 +13,7 @@ import Otp from './Page/Otp';
 import ResetPassword from './Page/ResetPassword';
 
 
+
 function App() {
    return ( 
     <Router>
@@ -29,6 +30,7 @@ function App() {
           <Route path="/holidays" element={<Holidays />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/markattendance" element={<MarkAttendance />} />
+         
         </Routes>
       </div>
     </Router>

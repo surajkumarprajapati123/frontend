@@ -1,117 +1,167 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { FaCalendarAlt, FaUser, FaClock, FaClipboardList } from 'react-icons/fa';
+import { FaCalendarAlt, FaUser, FaClock, FaClipboardList, FaBars, FaHome } from 'react-icons/fa';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
 
 const Home = () => {
-  // user data
+  const [isMenuOpen, setIsMenuOpen] = useState(true);
+  const [currentView, setCurrentView] = useState('welcome');
+  const [selectedDate, setSelectedDate] = useState(new Date());
+  const [workHours, setWorkHours] = useState('');
+
   const userName = 'Harsh Vardhan Singh';
   const userEmail = 'harshvsingh@digivista.com';
   const upcomingHolidays = [
-    { date: '14-06-2024', occasion: 'Diwali' }, // calendar api to be called for India holiday
+    { date: '14-06-2024', occasion: 'Diwali' },
     { date: '19-06-2024', occasion: 'Holi' },
   ];
-  const casualLeaves = 5; // to be synced
-  const sickLeaves = 5; // to be synced
-  const privilegedLeave = 5; // to be synced
+  const casualLeaves = 5;
+  const sickLeaves = 5;
+  const privilegedLeave = 5;
 
-  return (
-    <div className="flex flex-col items-center justify-start min-h-screen bg-gradient-to-r from-blue-500 to-purple-600 p-6">
-      <h1 className="text-4xl font-extrabold text-white mt-8">Dashboard</h1>
-      <h2 className="text-2xl font-bold text-white mt-4">Welcome, {userName}!</h2>
-      <div className="grid grid-cols-1 gap-6 mt-8 w-full px-6">
-        <Link to="/profile" className="group flex items-center w-full bg-white bg-opacity-20 p-6 rounded-md shadow-md hover:bg-opacity-40 transition duration-300">
-          <FaUser className="text-white text-4xl mr-4 group-hover:text-red-500 transition duration-300" />
-          <div className="text-left">
-            <p className="text-lg font-semibold text-white group-hover:text-red-500 transition duration-300">My Profile</p>
-            <p className="text-sm text-gray-200">{userEmail}</p>
+  const toggleMenu = () => {
+    setIsMenuOpen(!isMenuOpen);
+  };
+
+  const renderContent = () => {
+    switch (currentView) {
+      case 'profile':
+        return (
+          <div>
+            <h2 className="text-2xl font-bold text-white mt-4">My Profile</h2>
+            <p className="text-white mt-2">Name: {userName}</p>
+            <p className="text-white">Email: {userEmail}</p>
           </div>
-        </Link>
-        <Link to="/markattendance" className="group flex items-center w-full bg-white bg-opacity-20 p-6 rounded-md shadow-md hover:bg-opacity-40 transition duration-300">
-          <FaClock className="text-white text-4xl mr-4 group-hover:text-yellow-500 transition duration-300" />
-          <div className="text-left">
-            <p className="text-lg font-semibold text-white group-hover:text-yellow-500 transition duration-300">Mark your Attendance</p>
-            <p className="text-sm text-gray-200">Don't get late today!</p>
+        );
+      case 'attendance':
+        return (
+          <div>
+            <h2 className="text-2xl font-bold text-white mt-4">Mark your Attendance</h2>
+            <div className="bg-white bg-opacity-20 p-4 rounded-md shadow-md mt-4">
+              <DatePicker
+                selected={selectedDate}
+                onChange={(date) => setSelectedDate(date)}
+                dateFormat="dd-MM-yyyy"
+                className="w-full p-2 rounded-md"
+              />
+              <table className="w-full mt-4">
+                <thead>
+                  <tr>
+                    <th className="border px-4 py-2 text-white">Date</th>
+                    <th className="border px-4 py-2 text-white">Hours Worked</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td className="border px-4 py-2 text-white">{selectedDate.toDateString()}</td>
+                    <td className="border px-4 py-2">
+                      <input
+                        type="number"
+                        value={workHours}
+                        onChange={(e) => setWorkHours(e.target.value)}
+                        className="w-full p-2 rounded-md"
+                        placeholder="Enter hours worked"
+                      />
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+              <button className="bg-blue-500 text-white p-2 rounded-md mt-4 hover:bg-blue-600 transition duration-300">Submit</button>
+            </div>
           </div>
-        </Link>
-        <Link to="/holidays" className="group flex items-center w-full bg-white bg-opacity-20 p-6 rounded-md shadow-md hover:bg-opacity-40 transition duration-300">
-          <FaCalendarAlt className="text-white text-4xl mr-4 group-hover:text-green-500 transition duration-300" />
-          <div className="text-left">
-            <p className="text-lg font-semibold text-white group-hover:text-green-500 transition duration-300">View your Holidays</p>
-            <ul className="text-sm text-gray-200">
+        );
+      case 'holidays':
+        return (
+          <div>
+            <h2 className="text-2xl font-bold text-white mt-4">Your Holidays</h2>
+            <ul className="text-white mt-2">
               {upcomingHolidays.map((holiday, index) => (
                 <li key={index}>{holiday.date}: {holiday.occasion}</li>
               ))}
             </ul>
           </div>
-        </Link>
-        <Link to="/applyleave" className="group flex items-center w-full bg-white bg-opacity-20 p-6 rounded-md shadow-md hover:bg-opacity-40 transition duration-300">
-          <FaClipboardList className="text-white text-4xl mr-4 group-hover:text-purple-500 transition duration-300" />
-          <div className="text-left">
-            <p className="text-lg font-semibold text-white group-hover:text-purple-500 transition duration-300">Apply for Leave</p>
-            <p className="text-sm text-gray-200">Casual Leaves: {casualLeaves}, Sick Leaves: {sickLeaves}, Privileged Leave: {privilegedLeave}</p>
+        );
+      case 'leave':
+        return (
+          <div>
+            <h2 className="text-2xl font-bold text-white mt-4">Apply for Leave</h2>
+            <p className="text-white mt-2">Casual Leaves: {casualLeaves}</p>
+            <p className="text-white">Sick Leaves: {sickLeaves}</p>
+            <p className="text-white">Privileged Leave: {privilegedLeave}</p>
           </div>
-        </Link>
+        );
+      default:
+        return (
+          <div>
+            <h1 className="text-4xl font-extrabold text-white mt-8">Welcome to DigiVista!</h1>
+            <h2 className="text-2xl font-bold text-white mt-4">Hello, {userName}!</h2>
+            <p className="text-white mt-4">Here you can manage your profile, mark your attendance, view holidays, and apply for leaves.</p>
+          </div>
+        );
+    }
+  };
+
+  return (
+    <div className="flex min-h-screen bg-gradient-to-r from-blue-500 to-purple-600">
+      <div className={`flex flex-col bg-white bg-opacity-20 p-4 shadow-lg transition-width duration-300 ${isMenuOpen ? 'w-64' : 'w-20'}`}>
+        <button onClick={toggleMenu} className="text-white text-3xl mb-4 focus:outline-none">
+          <FaBars />
+        </button>
+        <button onClick={() => setCurrentView('welcome')} className="group flex items-center mb-4 p-2 rounded-md hover:bg-opacity-40 transition duration-300">
+          <FaHome className="text-white text-4xl mr-4 group-hover:text-blue-500 transition duration-300" />
+          {isMenuOpen && (
+            <div className="text-left">
+              <p className="text-lg font-semibold text-white group-hover:text-blue-500 transition duration-300">Home</p>
+            </div>
+          )}
+        </button>
+        <button onClick={() => setCurrentView('profile')} className="group flex items-center mb-4 p-2 rounded-md hover:bg-opacity-40 transition duration-300">
+          <FaUser className="text-white text-4xl mr-4 group-hover:text-red-500 transition duration-300" />
+          {isMenuOpen && (
+            <div className="text-left">
+              <p className="text-lg font-semibold text-white group-hover:text-red-500 transition duration-300">My Profile</p>
+              <p className="text-sm text-gray-200">{userEmail}</p>
+            </div>
+          )}
+        </button>
+        <button onClick={() => setCurrentView('attendance')} className="group flex items-center mb-4 p-2 rounded-md hover:bg-opacity-40 transition duration-300">
+          <FaClock className="text-white text-4xl mr-4 group-hover:text-yellow-500 transition duration-300" />
+          {isMenuOpen && (
+            <div className="text-left">
+              <p className="text-lg font-semibold text-white group-hover:text-yellow-500 transition duration-300">Mark your Attendance</p>
+              <p className="text-sm text-gray-200">Don't get late today!</p>
+            </div>
+          )}
+        </button>
+        <button onClick={() => setCurrentView('holidays')} className="group flex items-center mb-4 p-2 rounded-md hover:bg-opacity-40 transition duration-300">
+          <FaCalendarAlt className="text-white text-4xl mr-4 group-hover:text-green-500 transition duration-300" />
+          {isMenuOpen && (
+            <div className="text-left">
+              <p className="text-lg font-semibold text-white group-hover:text-green-500 transition duration-300">View your Holidays</p>
+              <ul className="text-sm text-gray-200">
+                {upcomingHolidays.map((holiday, index) => (
+                  <li key={index}>{holiday.date}: {holiday.occasion}</li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </button>
+        <button onClick={() => setCurrentView('leave')} className="group flex items-center mb-4 p-2 rounded-md hover:bg-opacity-40 transition duration-300">
+          <FaClipboardList className="text-white text-4xl mr-4 group-hover:text-purple-500 transition duration-300" />
+          {isMenuOpen && (
+            <div className="text-left">
+              <p className="text-lg font-semibold text-white group-hover:text-purple-500 transition duration-300">Apply for Leave</p>
+              <p className="text-sm text-gray-200">Casual Leaves: {casualLeaves}, Sick Leaves: {sickLeaves}, Privileged Leave: {privilegedLeave}</p>
+            </div>
+          )}
+        </button>
+      </div>
+      <div className="flex-grow p-6">
+        {renderContent()}
       </div>
     </div>
   );
 };
 
 export default Home;
-
-//--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-// import React from 'react';
-// import { Link } from 'react-router-dom';
-
-// const Home = () => {
-//   return (
-//     <div className="flex flex-col items-center justify-Top min-h-screen bg-gray-100 p-6">
-//       <h1 className="text-3xl font-bold mb-8">Home</h1>
-//       <div className="flex flex-col space-y-4">
-//         <Link to="/markattendance" className="w-full bg-blue-600 text-white py-3 rounded-md text-center hover:bg-blue-500 transition">
-//           Mark Attendance
-//         </Link>
-//         <Link to="/holidays" className="w-full bg-blue-600 text-white py-3 rounded-md text-center hover:bg-blue-500 transition">
-//           View upcoming Holidays
-//         </Link>
-//         <Link to="/profile" className="w-full bg-blue-600 text-white py-3 rounded-md text-center hover:bg-blue-500 transition">
-//           Profile
-//         </Link>
-//         <Link to="/applyleave" className="w-full bg-blue-600 text-white py-3 rounded-md text-center hover:bg-blue-500 transition">
-//           Apply for Leave
-//         </Link>
-//       </div>
-//     </div>
-//   );
-// };
-//--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-// import React from 'react';
-// import { Link } from 'react-router-dom';
-// import { FaCalendarAlt, FaUser, FaClock, FaClipboardList } from 'react-icons/fa';
-
-// const Home = () => {
-//   return (
-//     <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-r from-blue-500 to-purple-600 p-6">
-//       <h1 className="text-4xl font-extrabold text-white mb-8">Dashboard</h1>
-//       <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-//         <Link to="/profile" className="group w-full bg-white bg-opacity-20 p-6 rounded-md text-center shadow-md hover:bg-opacity-40 transition duration-300">
-//           <FaUser className="text-white text-4xl mb-4 group-hover:text-red-500 transition duration-300" />
-//           <p className="text-lg font-semibold text-white group-hover:text-red-500 transition duration-300">Profile</p>
-//         </Link>
-//         <Link to="/markattendance" className="group w-full bg-white bg-opacity-20 p-6 rounded-md text-center shadow-md hover:bg-opacity-40 transition duration-300">
-//           <FaClock className="text-white text-4xl mb-4 group-hover:text-yellow-500 transition duration-300" />
-//           <p className="text-lg font-semibold text-white group-hover:text-yellow-500 transition duration-300">Mark Attendance</p>
-//         </Link>
-//         <Link to="/holidays" className="group w-full bg-white bg-opacity-20 p-6 rounded-md text-center shadow-md hover:bg-opacity-40 transition duration-300">
-//           <FaCalendarAlt className="text-white text-4xl mb-4 group-hover:text-green-500 transition duration-300" />
-//           <p className="text-lg font-semibold text-white group-hover:text-green-500 transition duration-300">Upcoming Holidays/Week-Offs</p>
-//         </Link>
-//         <Link to="/applyleave" className="group w-full bg-white bg-opacity-20 p-6 rounded-md text-center shadow-md hover:bg-opacity-40 transition duration-300">
-//           <FaClipboardList className="text-white text-4xl mb-4 group-hover:text-purple-500 transition duration-300" />
-//           <p className="text-lg font-semibold text-white group-hover:text-purple-500 transition duration-300">Apply for Leave</p>
-//         </Link>
-//       </div>
-//     </div>
-//   );
-// };
-
-// export default Home;
