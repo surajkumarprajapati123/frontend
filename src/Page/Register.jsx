@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Icon } from '@iconify/react';
 import eyeOff from '@iconify/icons-mdi/eye-off';
 import eye from '@iconify/icons-mdi/eye';
+import axios from 'axios';
 
 const Register = () => {
   const [name, setName] = useState('');
@@ -50,7 +51,7 @@ const Register = () => {
     setIsValidPassword(validatePassword(newPassword));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (name && username && email && password && departmentName) {
       const formData = new FormData();
@@ -59,21 +60,39 @@ const Register = () => {
       formData.append('email', email);
       formData.append('password', password);
       formData.append('departmentName', departmentName);
-        
-      fetch('http://localhost:3000/user/create', {
-        method: 'POST',
-        body: formData,
-      })
-        .then((response) => response.json())
-        .then((data) => {
-          alert('Verify your email');
-          console.log(data);
-          navigate('/otp', { state: { email, flow: 'register' } });
-        })
-        .catch((error) => {
-          alert('Registration failed!');
-          console.error('Error:', error);
+
+      console.log('Form Data:', {
+        name,
+        username,
+        email,
+        password,
+        departmentName
+      });
+
+      try {
+        const response = await axios.post('http://localhost:3000/user/create', formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data'
+          }
         });
+        console.log('API Response:', response.data);
+        alert('Verify your email');
+        navigate('/otp', { state: { email, flow: 'register' } });
+      } catch (error) {
+        console.error('API Error:', error);
+        if (error.response) {
+          console.error('Error response:', error.response.data);
+          console.error('Error status:', error.response.status);
+          console.error('Error headers:', error.response.headers);
+          alert(`Registration failed: ${error.response.data.message || 'Unknown error'}`);
+        } else if (error.request) {
+          console.error('Error request:', error.request);
+          alert('No response received from the server.');
+        } else {
+          console.error('Error message:', error.message);
+          alert(`Registration failed: ${error.message}`);
+        }
+      }
     } else {
       alert('Please fill in all fields.');
     }

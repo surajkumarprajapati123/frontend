@@ -40,3 +40,38 @@
 .read-the-docs {
   color: #888;
 }
+.custom-calendar .react-calendar__tile {
+  text-align: center;
+  padding: 10px;
+  border-radius: 10px;
+  border: 1px solid #e0e0e0;
+  background: #fff;
+  transition: background 0.3s ease;
+}
+
+.custom-calendar .react-calendar__tile:hover {
+  background: #f0f0f0;
+}
+
+.custom-calendar .react-calendar__tile--active {
+  background: #00aaff;
+  color: white;
+}
+
+.custom-calendar .holiday {
+  color: red;
+  font-weight: bold;
+}
+
+.custom-calendar .present {
+  color: green;
+  font-weight: bold;
+}
+
+.custom-calendar .absent {
+  color: orange;
+  font-weight: bold;
+}
+
+
+
