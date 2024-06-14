@@ -1,23 +1,25 @@
-import React, { useState } from 'react';
-import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { Icon } from '@iconify/react';
-import eyeOff from '@iconify/icons-mdi/eye-off';
-import eye from '@iconify/icons-mdi/eye';
+import React, { useState } from "react";
+import { Link, useNavigate, useLocation } from "react-router-dom";
+import { Icon } from "@iconify/react";
+import eyeOff from "@iconify/icons-mdi/eye-off";
+import eye from "@iconify/icons-mdi/eye";
+import { toast } from "react-toastify";
+import axios from "axios";
 
 const Otp = () => {
-  const [otp, setOtp] = useState('');
-  const [type, setType] = useState('password');
+  const [otp, setOtp] = useState("");
+  const [type, setType] = useState("password");
   const [icon, setIcon] = useState(eyeOff);
-  const [message, setMessage] = useState('');
+  const [message, setMessage] = useState("");
   const navigate = useNavigate();
   const location = useLocation();
 
   const handleToggle = () => {
-    if (type === 'password') {
-      setType('text');
+    if (type === "password") {
+      setType("text");
       setIcon(eye);
     } else {
-      setType('password');
+      setType("password");
       setIcon(eyeOff);
     }
   };
@@ -25,40 +27,26 @@ const Otp = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch('http://localhost:3000/user/verify-email', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ otp }),
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        if (data.success) {
-          setMessage('Registration successful!');
-          setTimeout(() => {
-            if (location.state.flow === 'forgotPassword') {
-              navigate('/reset-password');
-            } else {
-              navigate('/login');
-            }
-          }, 2000); // Redirect after 2 seconds
-        } else {
-          setMessage('Invalid OTP. Please try again.');
+      const response = await axios.post(
+        "http://localhost:3000/user/verify-email",
+        {
+          otp,
         }
-      } else {
-        setMessage('An error occurred. Please try again later.');
-      }
+      );
+      console.log(response.data);
+      toast.success(response.data.message);
+      setOtp("");
+      navigate("/login");
     } catch (error) {
-      setMessage('An error occurred. Please try again later.');
+      console.log(error);
+      toast.error(error.response.data.message);
     }
   };
 
   return (
     <div
       className="bg-auto bg-center bg-no-repeat flex justify-center items-center h-screen"
-      style={{ backgroundImage: 'url(/desktop.png)' }}
+      style={{ backgroundImage: "url(/desktop.png)" }}
     >
       <div className="w-full max-w-md bg-white bg-opacity-90 p-4 rounded-lg shadow-lg">
         <img
@@ -110,16 +98,15 @@ const Otp = () => {
               </button>
             </div>
           </form>
-
           {message && (
-            <p className="mt-4 text-center text-sm text-red-500">
-              {message}
-            </p>
+            <p className="mt-4 text-center text-sm text-red-500">{message}</p>
           )}
-
           <p className="mt-10 text-center text-sm text-gray-500">
-            Didn't receive code?{' '} 
-            <Link to="/login" className="font-semibold leading-6 text-blue-600 hover:text-blue-500"> 
+            Didn't receive code?{" "}
+            <Link
+              to="/login"
+              className="font-semibold leading-6 text-blue-600 hover:text-blue-500"
+            >
               Resend
             </Link>
           </p>
