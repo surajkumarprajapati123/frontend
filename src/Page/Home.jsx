@@ -1,14 +1,18 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
 import { FaCalendarAlt, FaUser, FaClock, FaClipboardList, FaBars, FaHome } from 'react-icons/fa';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
+import Calendar from 'react-calendar';
+import 'react-calendar/dist/Calendar.css';
+import './App.css'; // Import custom CSS for the calendar
 
 const Home = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(true);
   const [currentView, setCurrentView] = useState('welcome');
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [workHours, setWorkHours] = useState('');
+  const [attendanceRecords, setAttendanceRecords] = useState({});
+  const [showAttendanceReport, setShowAttendanceReport] = useState(false);
 
   const userName = 'Harsh Vardhan Singh';
   const userEmail = 'harshvsingh@digivista.com';
@@ -19,9 +23,30 @@ const Home = () => {
   const casualLeaves = 5;
   const sickLeaves = 5;
   const privilegedLeave = 5;
+  const Present = 5;
+  const absent = 0;
+  const leave = 0;
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
+  };
+
+  const handleAttendanceSubmit = () => {
+    setAttendanceRecords((prevRecords) => ({
+      ...prevRecords,
+      [selectedDate.toDateString()]: workHours ? 'Present' : 'Absent',
+    }));
+    setWorkHours('');
+  };
+
+  const getTileContent = ({ date, view }) => {
+    if (view === 'month') {
+      const dateString = date.toDateString();
+      const holiday = upcomingHolidays.find((holiday) => new Date(holiday.date).toDateString() === dateString);
+      if (holiday) return <p className="holiday">Holiday</p>;
+      const attendanceStatus = attendanceRecords[dateString];
+      return <p className={attendanceStatus === 'Present' ? 'present' : 'absent'}>{attendanceStatus}</p>;
+    }
   };
 
   const renderContent = () => {
@@ -67,7 +92,12 @@ const Home = () => {
                   </tr>
                 </tbody>
               </table>
-              <button className="bg-blue-500 text-white p-2 rounded-md mt-4 hover:bg-blue-600 transition duration-300">Submit</button>
+              <button
+                onClick={handleAttendanceSubmit}
+                className="bg-blue-500 text-white p-2 rounded-md mt-4 hover:bg-blue-600 transition duration-300"
+              >
+                Submit
+              </button>
             </div>
           </div>
         );
@@ -89,6 +119,21 @@ const Home = () => {
             <p className="text-white mt-2">Casual Leaves: {casualLeaves}</p>
             <p className="text-white">Sick Leaves: {sickLeaves}</p>
             <p className="text-white">Privileged Leave: {privilegedLeave}</p>
+          </div>
+        );
+      case 'report':
+        return (
+          <div>
+            <h2 className="text-2xl font-bold text-white mt-4">Attendance Report</h2>
+            <p className="text-white mt-2">Present: {Present}</p>
+            <p className="text-white">Absent: {absent}</p>
+            <p className="text-white">Leave Leave: {leave}</p>
+            <div className="bg-white bg-opacity-20 p-4 rounded-md shadow-md mt-4">
+              <Calendar
+                tileContent={getTileContent}
+                className="custom-calendar"
+              />
+            </div>
           </div>
         );
       default:
@@ -153,6 +198,14 @@ const Home = () => {
             <div className="text-left">
               <p className="text-lg font-semibold text-white group-hover:text-purple-500 transition duration-300">Apply for Leave</p>
               <p className="text-sm text-gray-200">Casual Leaves: {casualLeaves}, Sick Leaves: {sickLeaves}, Privileged Leave: {privilegedLeave}</p>
+            </div>
+          )}
+        </button>
+        <button onClick={() => setCurrentView('report')} className="group flex items-center mb-4 p-2 rounded-md hover:bg-opacity-40 transition duration-300">
+          <FaClipboardList className="text-white text-4xl mr-4 group-hover:text-purple-500 transition duration-300" />
+          {isMenuOpen && (
+            <div className="text-left">
+              <p className="text-lg font-semibold text-white group-hover:text-purple-500 transition duration-300">Attendance Report</p>
             </div>
           )}
         </button>

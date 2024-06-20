@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Icon } from "@iconify/react";
@@ -5,6 +6,14 @@ import eyeOff from "@iconify/icons-mdi/eye-off";
 import eye from "@iconify/icons-mdi/eye";
 import axios from "axios";
 import { toast } from "react-toastify";
+=======
+import React, { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { Icon } from '@iconify/react';
+import eyeOff from '@iconify/icons-mdi/eye-off';
+import eye from '@iconify/icons-mdi/eye';
+import axios from 'axios';
+>>>>>>> origin/main
 
 const Register = () => {
   const [name, setName] = useState("");
@@ -54,15 +63,28 @@ const Register = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+<<<<<<< HEAD
 
     // Assuming forrdata is defined somewhere
 
     try {
       const response = await axios.post("http://localhost:3000/user/create", {
+=======
+    if (name && username && email && password && departmentName) {
+      const formData = new FormData();
+      formData.append('name', name);
+      formData.append('username', username);
+      formData.append('email', email);
+      formData.append('password', password);
+      formData.append('departmentName', departmentName);
+
+      console.log('Form Data:', {
+>>>>>>> origin/main
         name,
         username,
         email,
         password,
+<<<<<<< HEAD
         departmentName,
       });
 
@@ -79,6 +101,37 @@ const Register = () => {
       // Handle error
       console.error("Error creating user:", error);
       toast.error(error.response.data.message);
+=======
+        departmentName
+      });
+
+      try {
+        const response = await axios.post('http://localhost:3000/user/create', formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data'
+          }
+        });
+        console.log('API Response:', response.data);
+        alert('Verify your email');
+        navigate('/otp', { state: { email, flow: 'register' } });
+      } catch (error) {
+        console.error('API Error:', error);
+        if (error.response) {
+          console.error('Error response:', error.response.data);
+          console.error('Error status:', error.response.status);
+          console.error('Error headers:', error.response.headers);
+          alert(`Registration failed: ${error.response.data.message || 'Unknown error'}`);
+        } else if (error.request) {
+          console.error('Error request:', error.request);
+          alert('No response received from the server.');
+        } else {
+          console.error('Error message:', error.message);
+          alert(`Registration failed: ${error.message}`);
+        }
+      }
+    } else {
+      alert('Please fill in all fields.');
+>>>>>>> origin/main
     }
   };
 
